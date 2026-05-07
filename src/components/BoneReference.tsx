@@ -1,7 +1,7 @@
-import type { Bone, Modifier } from '../lib/types';
+import type { UnifiedBone, Modifier } from '../lib/types';
 
 interface Props {
-  bones: Bone[];
+  bones: UnifiedBone[];
   activeModifier: Modifier | null;
 }
 
@@ -21,8 +21,13 @@ export default function BoneReference({ bones, activeModifier }: Props) {
         </thead>
         <tbody>
           {bones.map(bone => (
-            <tr key={bone.id} style={{ borderBottom: '1px solid var(--border)' }}>
-              <td style={{ padding: '6px 8px' }}>{bone.name}</td>
+            <tr key={`${bone.source}:${bone.id}`} style={{ borderBottom: '1px solid var(--border)' }}>
+              <td style={{ padding: '6px 8px' }}>
+                {bone.name}
+                {bone.source === 'custom' && (
+                  <span style={{ fontSize: 9, color: 'var(--gold-dim)', marginLeft: 6 }}>CUSTOM</span>
+                )}
+              </td>
               <td style={{ padding: '6px 8px', textAlign: 'right' }} className="mono">
                 {bone.base_xp}
               </td>

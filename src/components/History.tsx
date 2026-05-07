@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { HistoryEntry } from '../lib/types';
+import { getBoneName } from '../lib/bones';
 
 interface Props {
   entries: HistoryEntry[];
@@ -45,9 +46,9 @@ export default function History({ entries, onDelete }: Props) {
                   >
                     {entry.action}
                   </span>
-                  <span style={{ fontSize: 13 }}>{entry.prayer_bones?.name}</span>
+                  <span style={{ fontSize: 13 }}>{getBoneName(entry)}</span>
                   <span className="mono" style={{ fontSize: 11, color: 'var(--text-dim)' }}>
-                    ×{entry.quantity}
+                    &times;{entry.quantity}
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: 12, fontSize: 11 }}>

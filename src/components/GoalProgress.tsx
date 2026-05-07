@@ -1,5 +1,5 @@
 import type { UserProgress } from '../lib/types';
-import { xpForLevel } from '../lib/xp';
+import { xpForLevel, levelForXp } from '../lib/xp';
 
 interface Props {
   progress: UserProgress;
@@ -8,19 +8,26 @@ interface Props {
 
 export default function GoalProgress({ progress, bankedXp }: Props) {
   const goalXp = xpForLevel(progress.goal_level);
+  const currentLevel = levelForXp(progress.current_xp);
+  const startXp = progress.track_from_level1 ? 0 : xpForLevel(currentLevel);
   const currentXp = progress.current_xp;
   const projectedXp = currentXp + bankedXp;
+  const range = goalXp - startXp;
 
   const xpNeeded = Math.max(0, goalXp - currentXp);
   const xpGap = Math.max(0, goalXp - projectedXp);
-  const pctReached = goalXp > 0 ? Math.min(100, (projectedXp / goalXp) * 100) : 100;
+  const pctReached = range > 0 ? Math.min(100, ((projectedXp - startXp) / range) * 100) : 100;
 
-  const currentPct = goalXp > 0 ? Math.min(100, (currentXp / goalXp) * 100) : 100;
-  const bankedPct = goalXp > 0 ? Math.min(100 - currentPct, (bankedXp / goalXp) * 100) : 0;
+  const currentPct = range > 0 ? Math.min(100, Math.max(0, ((currentXp - startXp) / range) * 100)) : 100;
+  const bankedPct = range > 0 ? Math.min(100 - currentPct, Math.max(0, (bankedXp / range) * 100)) : 0;
+
+  const trackLabel = progress.track_from_level1
+    ? `Level 1 → ${progress.goal_level}`
+    : `Level ${currentLevel} → ${progress.goal_level}`;
 
   return (
     <div className="panel">
-      <h3 style={{ fontSize: 14, marginBottom: 12 }}>Goal Progress → Level {progress.goal_level}</h3>
+      <h3 style={{ fontSize: 14, marginBottom: 12 }}>Goal Progress &middot; {trackLabel}</h3>
 
       <div style={{ position: 'relative', width: '100%', height: 20, background: 'var(--surface3)', borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
         <div
